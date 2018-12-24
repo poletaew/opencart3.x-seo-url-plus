@@ -1,10 +1,10 @@
-Index: web/admin/controller/design/seo_url.php
+Index: admin/controller/design/seo_url.php
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- web/admin/controller/design/seo_url.php	(date 1545640325000)
-+++ web/admin/controller/design/seo_url.php	(date 1545640356000)
+--- admin/controller/design/seo_url.php	(date 1545640325000)
++++ admin/controller/design/seo_url.php	(date 1545640356000)
 @@ -54,6 +54,8 @@
  				$url .= '&page=' . $this->request->get['page'];
  			}
@@ -32,13 +32,13 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
  			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
  		}
  
-Index: web/catalog/controller/startup/seo_url.php
+Index: catalog/controller/startup/seo_url.php
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- web/catalog/controller/startup/seo_url.php	(date 1545640325000)
-+++ web/catalog/controller/startup/seo_url.php	(date 1545640356000)
+--- catalog/controller/startup/seo_url.php	(date 1545640325000)
++++ catalog/controller/startup/seo_url.php	(date 1545640356000)
 @@ -1,5 +1,8 @@
  <?php
  class ControllerStartupSeoUrl extends Controller {
