@@ -1,0 +1,181 @@
+Index: web/admin/controller/design/seo_url.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/admin/controller/design/seo_url.php	(date 1545640325000)
++++ web/admin/controller/design/seo_url.php	(date 1545640356000)
+@@ -54,6 +54,8 @@
+ 				$url .= '&page=' . $this->request->get['page'];
+ 			}
+ 
++			$this->cache->delete('seoUrl.map');
++
+ 			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
+ 		}
+ 
+@@ -102,6 +104,8 @@
+ 				$url .= '&page=' . $this->request->get['page'];
+ 			}
+ 
++            $this->cache->delete('seoUrl.map');
++
+ 			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
+ 		}
+ 
+@@ -152,6 +156,8 @@
+ 				$url .= '&page=' . $this->request->get['page'];
+ 			}
+ 
++            $this->cache->delete('seoUrl.map');
++
+ 			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
+ 		}
+ 
+Index: web/catalog/controller/startup/seo_url.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web/catalog/controller/startup/seo_url.php	(date 1545640325000)
++++ web/catalog/controller/startup/seo_url.php	(date 1545640356000)
+@@ -1,5 +1,8 @@
+ <?php
+ class ControllerStartupSeoUrl extends Controller {
++
++    private $map;
++
+ 	public function index() {
+ 		// Add rewrite to url class
+ 		if ($this->config->get('config_seo_url')) {
+@@ -66,62 +69,85 @@
+ 	}
+ 
+ 	public function rewrite($link) {
+-		$url_info = parse_url(str_replace('&amp;', '&', $link));
++        $url_info = parse_url(str_replace('&amp;', '&', $link));
++        $url_query = $url_info['query'];
+ 
+-		$url = '';
+-
+-		$data = array();
+-
+-		parse_str($url_info['query'], $data);
++        $this->map = ($cacheString = $this->cache->get('seoUrl.map')) ? json_decode($cacheString, true) : [];
++
++        if (!$this->map[$url_query]) {
++            $url = '';
++            $data = [];
++		    parse_str($url_query, $data);
+ 
+-		foreach ($data as $key => $value) {
+-			if (isset($data['route'])) {
+-				if (($data['route'] == 'product/product' && $key == 'product_id') || (($data['route'] == 'product/manufacturer/info' || $data['route'] == 'product/product') && $key == 'manufacturer_id') || ($data['route'] == 'information/information' && $key == 'information_id')) {
+-					$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE `query` = '" . $this->db->escape($key . '=' . (int)$value) . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
++            foreach ($data as $key => $value) {
++                if (isset($data['route'])) {
++                    if (($data['route'] == 'product/product' && $key == 'product_id') || (($data['route'] == 'product/manufacturer/info' || $data['route'] == 'product/product') && $key == 'manufacturer_id') || ($data['route'] == 'information/information' && $key == 'information_id')) {
++                        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE `query` = '" . $this->db->escape($key . '=' . (int)$value) . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+ 
+-					if ($query->num_rows && $query->row['keyword']) {
+-						$url .= '/' . $query->row['keyword'];
++                        if ($query->num_rows && $query->row['keyword']) {
++                            $url .= '/' . $query->row['keyword'];
+ 
+-						unset($data[$key]);
+-					}
+-				} elseif ($key == 'path') {
+-					$categories = explode('_', $value);
++                            unset($data[$key]);
++                        }
++                    } elseif ($key == 'path') {
++                        $categories = explode('_', $value);
+ 
+-					foreach ($categories as $category) {
+-						$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE `query` = 'category_id=" . (int)$category . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
++                        foreach ($categories as $category) {
++                            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE `query` = 'category_id=" . (int)$category . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
+ 
+-						if ($query->num_rows && $query->row['keyword']) {
+-							$url .= '/' . $query->row['keyword'];
+-						} else {
+-							$url = '';
++                            if ($query->num_rows && $query->row['keyword']) {
++                                $url .= '/' . $query->row['keyword'];
++                            } else {
++                                $url = '';
+ 
+-							break;
+-						}
+-					}
++                                break;
++                            }
++                        }
+ 
+-					unset($data[$key]);
+-				}
+-			}
+-		}
++                        unset($data[$key]);
++                    }
++                }
++            }
+ 
+-		if ($url) {
+-			unset($data['route']);
++            //if link has route without additional parameters
++            if (!$url && !empty($data['route']) && count($data) == 1) {
++                $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url 
++                    WHERE `query` = '" . $this->db->escape($data['route']) . "' 
++                        AND store_id = '" . (int)$this->config->get('config_store_id') . "' 
++                        AND language_id = '" . (int)$this->config->get('config_language_id') . "'"
++                );
++
++                if ($query->num_rows && $query->row['keyword']) {
++                    $url = ($query->row['keyword'] == '/')
++                        ? $query->row['keyword']
++                        : '/' . $query->row['keyword'];
++                }
++            }
++
++            if ($url) {
++                unset($data['route']);
+ 
+-			$query = '';
++                $query = '';
+ 
+-			if ($data) {
+-				foreach ($data as $key => $value) {
+-					$query .= '&' . rawurlencode((string)$key) . '=' . rawurlencode((is_array($value) ? http_build_query($value) : (string)$value));
+-				}
++                if ($data) {
++                    foreach ($data as $key => $value) {
++                        $query .= '&' . rawurlencode((string)$key) . '=' . rawurlencode((is_array($value) ? http_build_query($value) : (string)$value));
++                    }
+ 
+-				if ($query) {
+-					$query = '?' . str_replace('&', '&amp;', trim($query, '&'));
+-				}
+-			}
++                    if ($query) {
++                        $query = '?' . str_replace('&', '&amp;', trim($query, '&'));
++                    }
++                }
+ 
+-			return $url_info['scheme'] . '://' . $url_info['host'] . (isset($url_info['port']) ? ':' . $url_info['port'] : '') . str_replace('/index.php', '', $url_info['path']) . $url . $query;
+-		} else {
+-			return str_replace(['index.php?route=','common/home'], [], $link);
+-		}
+-	}
++                    $this->map[$url_query] = $url_info['scheme'] . '://' . $url_info['host'] . (isset($url_info['port']) ? ':' . $url_info['port'] : '') . str_replace('/index.php', '', $url_info['path']) . $url . $query;
++                }
++            else {
++                $this->map[$url_query] = $link;
++            }
++
++            $this->cache->set('seoUrl.map', json_encode($this->map));
++        }
++
++        return $this->map[$url_query];
++    }
+ }
