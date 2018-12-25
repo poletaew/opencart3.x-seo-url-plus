@@ -1,44 +1,10 @@
-Index: admin/controller/design/seo_url.php
+Index: upload/catalog/controller/startup/seo_url.php
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- admin/controller/design/seo_url.php	(date 1545640325000)
-+++ admin/controller/design/seo_url.php	(date 1545640356000)
-@@ -54,6 +54,8 @@
- 				$url .= '&page=' . $this->request->get['page'];
- 			}
- 
-+			$this->cache->delete('seoUrl.map');
-+
- 			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
- 		}
- 
-@@ -102,6 +104,8 @@
- 				$url .= '&page=' . $this->request->get['page'];
- 			}
- 
-+            $this->cache->delete('seoUrl.map');
-+
- 			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
- 		}
- 
-@@ -152,6 +156,8 @@
- 				$url .= '&page=' . $this->request->get['page'];
- 			}
- 
-+            $this->cache->delete('seoUrl.map');
-+
- 			$this->response->redirect($this->url->link('design/seo_url', 'user_token=' . $this->session->data['user_token'] . $url, true));
- 		}
- 
-Index: catalog/controller/startup/seo_url.php
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
---- catalog/controller/startup/seo_url.php	(date 1545640325000)
-+++ catalog/controller/startup/seo_url.php	(date 1545640356000)
+--- upload/catalog/controller/startup/seo_url.php	(date 1545640325000)
++++ upload/catalog/controller/startup/seo_url.php	(date 1545640356000)
 @@ -1,5 +1,8 @@
  <?php
  class ControllerStartupSeoUrl extends Controller {
@@ -179,3 +145,28 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +        return $this->map[$url_query];
 +    }
  }
+Index: upload/admin/model/design/seo_url.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- upload/admin/model/design/seo_url.php	(date 1545643853000)
++++ upload/admin/model/design/seo_url.php	(date 1545676715000)
+@@ -2,14 +2,17 @@
+ class ModelDesignSeoUrl extends Model {
+ 	public function addSeoUrl($data) {
+ 		$this->db->query("INSERT INTO `" . DB_PREFIX . "seo_url` SET store_id = '" . (int)$data['store_id'] . "', language_id = '" . (int)$data['language_id'] . "', query = '" . $this->db->escape($data['query']) . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
++        $this->cache->delete('seoUrl.map');
+ 	}
+ 
+ 	public function editSeoUrl($seo_url_id, $data) {
+ 		$this->db->query("UPDATE `" . DB_PREFIX . "seo_url` SET store_id = '" . (int)$data['store_id'] . "', language_id = '" . (int)$data['language_id'] . "', query = '" . $this->db->escape($data['query']) . "', keyword = '" . $this->db->escape($data['keyword']) . "' WHERE seo_url_id = '" . (int)$seo_url_id . "'");
++        $this->cache->delete('seoUrl.map');
+ 	}
+ 
+ 	public function deleteSeoUrl($seo_url_id) {
+ 		$this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE seo_url_id = '" . (int)$seo_url_id . "'");
++        $this->cache->delete('seoUrl.map');
+ 	}
+ 	
+ 	public function getSeoUrl($seo_url_id) {
