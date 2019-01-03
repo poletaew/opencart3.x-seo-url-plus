@@ -1,10 +1,10 @@
-Index: web/catalog/controller/startup/seo_url.php
+Index: upload/catalog/controller/startup/seo_url.php
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- web/catalog/controller/startup/seo_url.php	(date 1545640325000)
-+++ web/catalog/controller/startup/seo_url.php	(date 1545640356000)
+--- upload/catalog/controller/startup/seo_url.php	(date 1545640325000)
++++ upload/catalog/controller/startup/seo_url.php	(date 1545640356000)
 @@ -1,5 +1,8 @@
  <?php
  class ControllerStartupSeoUrl extends Controller {
@@ -145,13 +145,13 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +        return $this->map[$url_query];
 +    }
  }
-Index: web/admin/model/design/seo_url.php
+Index: upload/admin/model/design/seo_url.php
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- web/admin/model/design/seo_url.php	(date 1545643853000)
-+++ web/admin/model/design/seo_url.php	(date 1545676715000)
+--- upload/admin/model/design/seo_url.php	(date 1545643853000)
++++ upload/admin/model/design/seo_url.php	(date 1545676715000)
 @@ -2,14 +2,17 @@
  class ModelDesignSeoUrl extends Model {
  	public function addSeoUrl($data) {
@@ -170,13 +170,13 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
  	}
  	
  	public function getSeoUrl($seo_url_id) {
-Index: web/admin/model/catalog/product.php
+Index: upload/admin/model/catalog/product.php
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- web/admin/model/catalog/product.php	(date 1546545216000)
-+++ web/admin/model/catalog/product.php	(date 1546546596000)
+--- upload/admin/model/catalog/product.php	(date 1546545216000)
++++ upload/admin/model/catalog/product.php	(date 1546546596000)
 @@ -280,6 +280,7 @@
  					}
  				}
