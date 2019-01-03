@@ -176,8 +176,16 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 --- upload/admin/model/catalog/product.php	(date 1546545216000)
-+++ upload/admin/model/catalog/product.php	(date 1546546596000)
-@@ -280,6 +280,7 @@
++++ upload/admin/model/catalog/product.php	(date 1546547074000)
+@@ -120,6 +120,7 @@
+ 					}
+ 				}
+ 			}
++            $this->cache->delete('seoUrl.map');
+ 		}
+ 		
+ 		if (isset($data['product_layout'])) {
+@@ -280,6 +281,7 @@
  					}
  				}
  			}
