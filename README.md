@@ -2,7 +2,7 @@
 
 ## What's new?
 
-This module's based on standard **SEO URL** functionality, but fix link generation.
+This module's based on standard **SEO URL** functionality, but fixes link generation.
 By default OpenCart 3.x generates SEO link only for following entities:
 
 * `product`
